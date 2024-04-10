@@ -114,7 +114,6 @@ class ProductController extends Controller
 
         $product->save();
 
-        // 商品情報が更新された後に、商品情報詳細画面にリダイレクトする
         return redirect()->route('products.show', $product->id)->with('success', '商品情報が更新されました');
     }
 }

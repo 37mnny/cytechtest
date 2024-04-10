@@ -17,7 +17,6 @@
                     <th>在庫数</th>
                     <th>コメント</th>
                     <th>商品画像</th>
-                    
                 </tr>
             </thead>
             <tbody>
@@ -32,7 +31,7 @@
                     <td>
                         <a href="{{ route('products.show', $product) }}" class="btn btn-info btn-sm mx-1">詳細表示</a>
                         <a href="{{ route('products.edit', $product) }}" class="btn btn-primary btn-sm mx-1">編集</a>
-                        <button type="button" onclick="confirmDelete({{ $product->id }})" class="btn btn-danger btn-sm mx-1">削除</button> <!-- 削除ボタンを追加 -->
+                        <button type="button" onclick="confirmDelete({{ $product->id }})" class="btn btn-danger btn-sm mx-1">削除</button>
                         <form id="delete-form-{{ $product->id }}" action="{{ route('products.destroy', $product->id) }}" method="POST" style="display: none;">
                             @csrf
                             @method('DELETE')
@@ -45,11 +44,5 @@
     </div>
 </div>
 
-<script>
-    function confirmDelete(productId) {
-        if (confirm('本当に削除しますか？')) {
-            document.getElementById('delete-form-' + productId).submit();
-        }
-    }
-</script>
-@endsection
+
+

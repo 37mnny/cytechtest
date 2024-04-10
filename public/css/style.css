@@ -1,0 +1,5 @@
+.required::after {
+    content: '*';
+    color: red;
+    margin-left: 2px; /* 星印とフィールド名の間に少し間隔を開ける */
+}

@@ -58,7 +58,7 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary">変更</button>
+                                <button type="submit" class="btn btn-primary">更新</button>
                             </div>
                             <div class="col-md-6">
                                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-primary">戻る</a>

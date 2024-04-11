@@ -16,7 +16,7 @@ Route::middleware(['auth'])->group(function () {
     // 認証されたユーザーのみがアクセスできるルート
     Route::get('/product', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::post('/products/store', [ProductController::class, 'store'])->name('products.store'); // 新しく追加
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
     // 商品削除
@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
 });
+
 
 // 新規登録後に /login にリダイレクト
 Route::post('/register', function () {

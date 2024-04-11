@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">商品新規登録</h1>
+    <h1 class="mb-4">商品新規登録画面</h1>
 
     <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
         @csrf
@@ -13,7 +13,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="company_id" class="form-label required">メーカー</label>
+            <label for="company_id" class="form-label required">メーカー名</label>
             <select class="form-select" id="company_id" name="company_id" required>
                 @foreach($companies as $company)
                     <option value="{{ $company->id }}">{{ $company->company_name }}</option>

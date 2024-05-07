@@ -9,121 +9,118 @@ use App\Models\Company;
 class ProductController extends Controller
 {
     public function index(Request $request)
-{
-    $search = $request->input('search');
-    $companyId = $request->input('company');
+    {
+        try {
+            $search = $request->input('search');
+            $companyId = $request->input('company');
 
-    // 商品情報を取得
-    $query = Product::query();
+            $query = Product::query();
 
-    // 検索キーワードがある場合、商品名で部分一致検索を行う
-    if ($search) {
-        $query->where('product_name', 'like', '%' . $search . '%');
+            if ($search) {
+                $query->where('product_name', 'like', '%' . $search . '%');
+            }
 
+            if ($companyId) {
+                $query->where('company_id', $companyId);
+            }
+
+            $products = $query->get();
+            $companies = Company::all();
+
+            return view('products.index', compact('products', 'search', 'companies', 'companyId'));
+        } catch (\Exception $e) {
+            // エラーが発生した場合の処理
+            // 例えば、ログを記録したり、エラーメッセージを表示したりします
+            return back()->withErrors(['error' => 'エラーが発生しました。']);
+        }
     }
-
-    // 企業名で絞り込み
-    if ($companyId) {
-        $query->where('company_id', $companyId);
-    }
-
-    $products = $query->get();
-    $companies = Company::all();
-
-    // ビューを返す
-    // コントローラーの index メソッド内
-return view('products.index', compact('products', 'search', 'companies', 'companyId'));
-
-}
-
-
-
-public function create()
+    public function create()
 {
-    // 全てのメーカー情報を取得
     $companies = Company::all();
-
-    // 新規登録用のビューを表示
     return view('products.create', compact('companies'));
 }
 
-public function destroy($id)
-{
-    // 商品を取得
-    $product = Product::findOrFail($id);
 
-    // 商品を削除
-    $product->delete();
+    public function store(Request $request)
+    {
+        try {
+            $product = new Product();
+            $product->product_name = $request->input('product_name');
+            $product->company_id = $request->input('company_id');
+            $product->price = $request->input('price');
+            $product->stock = $request->input('stock');
+            $product->comment = $request->input('comment');
 
-    // 削除後、商品一覧ページにリダイレクト
-    return redirect()->route('products.index')->with('success', '商品が削除されました');
-}
+            if ($request->hasFile('img_path')) {
+                $imgPath = $request->file('img_path')->store('public/images');
+                // 'public/' を削除してファイルパスを修正する
+                $imgPath = str_replace('public/', '', $imgPath);
+                $product->img_path = $imgPath;
+            }
 
-        // モデルインスタンスである$productに対して行われた変更をデータベースに保存するためのメソッド（機能）です。
+            $product->save();
 
-        // 全ての処理が終わったら、商品一覧画面に戻ります。
-        public function store(Request $request)
-{
-    // バリデーションなどの処理をここに追加
-
-    // フォームから送信されたデータを使って新しい商品を作成する
-    $product = new Product();
-    $product->product_name = $request->input('product_name');
-    $product->company_id = $request->input('company_id');
-    $product->price = $request->input('price');
-    $product->stock = $request->input('stock');
-    $product->comment = $request->input('comment');
-
-    // 画像のアップロード処理
-    if ($request->hasFile('img_path')) {
-        $imgPath = $request->file('img_path')->store('images');
-        $product->img_path = $imgPath;
+            return redirect()->route('products.create')->with('success', '商品が登録されました');
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['error' => 'エラーが発生しました。もう一度やり直してください。']);
+        }
     }
 
-    // 保存処理
-    $product->save();
-
-    // 新規登録が完了したらリダイレクトするなどの処理を行う
-    return redirect()->route('products.create')->with('success', '商品が登録されました');
-
+    public function destroy($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->delete();
+            return redirect()->route('products.index')->with('success', '商品が削除されました');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'エラーが発生しました。もう一度やり直してください。']);
+        }
+    }
+    
+    public function show($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            return view('products.show', compact('product'));
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'エラーが発生しました。']);
+        }
+    }
+    
+    public function edit($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $companies = Company::all();
+            return view('products.edit', compact('product', 'companies'));
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'エラーが発生しました。']);
+        }
+    }
+    
+    public function update(Request $request, $id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->product_name = $request->input('product_name');
+            $product->company_id = $request->input('company_id');
+            $product->price = $request->input('price');
+            $product->stock = $request->input('stock');
+            $product->comment = $request->input('comment');
+    
+            if ($request->hasFile('img_path')) {
+                $imgPath = $request->file('img_path')->store('public/images');
+                $product->img_path = str_replace('public/', '', $imgPath);
+            }
+            
+            
+            $product->save();
+    
+            return redirect()->route('products.index')->with('success', '商品情報が更新されました');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'エラーが発生しました。もう一度やり直してください。']);
+        }
+    }
     
 }
-public function show($id)
-{
-    $product = Product::findOrFail($id);
-    return view('products.show', compact('product'));
-}
-public function edit($id)
-{
-    $product = Product::findOrFail($id);
-    $companies = Company::all();
-    return view('products.edit', compact('product', 'companies'));
-}
-
-public function update(Request $request, $id)
-{
-    $product = Product::findOrFail($id);
-    $product->product_name = $request->input('product_name');
-    $product->company_id = $request->input('company_id');
-    $product->price = $request->input('price');
-    $product->stock = $request->input('stock');
-    $product->comment = $request->input('comment');
-
-    // 画像のアップロード処理
-    if ($request->hasFile('img_path')) {
-        $imgPath = $request->file('img_path')->store('images');
-        $product->img_path = $imgPath;
-    }
-
-    $product->save();
-
-    return redirect()->route('products.index')->with('success', '商品情報が更新されました');
-}
-
-
-
-
-
-    }
-
 

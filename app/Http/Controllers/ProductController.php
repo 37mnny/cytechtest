@@ -29,8 +29,7 @@ class ProductController extends Controller
 
             return view('products.index', compact('products', 'search', 'companies', 'companyId'));
         } catch (\Exception $e) {
-            // エラーが発生した場合の処理
-            // 例えば、ログを記録したり、エラーメッセージを表示したりします
+            
             return back()->withErrors(['error' => 'エラーが発生しました。']);
         }
     }
@@ -53,7 +52,7 @@ class ProductController extends Controller
 
             if ($request->hasFile('img_path')) {
                 $imgPath = $request->file('img_path')->store('public/images');
-                // 'public/' を削除してファイルパスを修正する
+               
                 $imgPath = str_replace('public/', '', $imgPath);
                 $product->img_path = $imgPath;
             }

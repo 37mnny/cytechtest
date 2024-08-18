@@ -9,8 +9,9 @@ class Product extends Model
 {
     use HasFactory;
 
+    // フィールド名をフォームで使用している名前に合わせる
     protected $fillable = [
-        'name', 'description', 'price', 'stock', 'company_id'
+        'product_name', 'price', 'stock', 'company_id', 'comment', 'img_path'
     ];
 
     public function company()

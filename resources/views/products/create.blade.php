@@ -8,9 +8,9 @@
         @csrf
 
         <div class="mb-3">
-            <label for="product_name" class="form-label required">商品名</label>
-            <input id="product_name" type="text" name="product_name" class="form-control" required>
-        </div>
+    <label for="product_name" class="form-label required">商品名</label>
+    <input id="product_name" type="text" name="product_name" class="form-control" value="{{ old('product_name') }}" required>
+</div>
 
         <div class="mb-3">
             <label for="company_id" class="form-label required">メーカー名</label>

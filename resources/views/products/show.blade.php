@@ -14,6 +14,7 @@
         <dt class="col-sm-3">メーカー</dt>
         <dd class="col-sm-9">{{ $product->company->company_name }}</dd>
 
+
         <dt class="col-sm-3">価格</dt>
         <dd class="col-sm-9">{{ $product->price }}</dd>
 
@@ -24,7 +25,14 @@
         <dd class="col-sm-9">{{ $product->comment }}</dd>
 
         <dt class="col-sm-3">商品画像</dt>
-        <dd class="col-sm-9"><img src="{{ asset('storage/' . $product->img_path) }}" width="300"></dd>
+        <img src="{{ asset('storage/' . $product->img_path) }}" width="300">
+
+
+
+
+
+
+
 
 
 

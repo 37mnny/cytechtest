@@ -13,7 +13,7 @@ class RegisterController extends Controller
 {
     use RegistersUsers;
 
-    protected $redirectTo = '/login';
+    protected $redirectTo = '/login'; // デフォルトのリダイレクト先を設定
 
     public function __construct()
     {
@@ -24,24 +24,20 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
-            'password' => ['required', 'string', 'confirmed', 'regex:/^[a-zA-Z0-9]+$/'], // 半角英数字のみを許可
-        ], [
-            'password.regex' => 'パスワードには半角英数字のみを含めてください。',
-            'email.regex' => 'メールアドレスには半角英数字と一部の記号を含めてください。',
-            'password.confirmed' => 'パスワードとパスワード確認が一致しません。',
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'confirmed', 'min:8'], // パスワードの最小長を設定
         ]);
     }
 
     protected function create(array $data)
     {
-        $user = User::create([
+        User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
 
-        // 登録後にログインページにリダイレクト
+        // 登録後に /login にリダイレクト
         return redirect('/login');
     }
 }

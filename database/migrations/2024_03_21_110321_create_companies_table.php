@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateCompaniesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('companies', function (Blueprint $table) {
-            $table->id(); // bigint(20) の ID
-            $table->string('company_name', 255);
-            $table->string('street_address', 255);
-            $table->string('representative_name', 255);
-            $table->timestamps(); // created_at と upd
+        Schema::create('sales', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('product_id');
+            $table->integer('quantity');
+            $table->decimal('total_price', 10, 2);
+            $table->timestamps();
+
+            // 外部キー制約
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
     }
 
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('sales');
     }
-};
+}

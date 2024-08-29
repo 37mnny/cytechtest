@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/js/products.js'])
+    @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/js/products.js','resources/js/sort.js','resources/js/search.js'])
     
     <!-- jQuery and TableSorter -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

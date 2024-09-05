@@ -77,5 +77,7 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/products.js') }}"></script>
-@endsection
+<script>
+    var productIndexUrl = "{{ route('products.index') }}";
+</script>
+

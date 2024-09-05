@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="jp">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,12 +28,15 @@
     </div>
 
     <script>
+        // LaravelのルートをJavaScriptに渡す
+        var searchUrl = "{{ route('products.search.results') }}";
+
         $(document).ready(function() {
             $('#search-button').on('click', function() {
                 var formData = $('#search-form').serialize();
 
                 $.ajax({
-                    url: '{{ route('products.search.results') }}',
+                    url: searchUrl,  // JavaScript変数を使用
                     type: 'GET',
                     data: formData,
                     dataType: 'json',

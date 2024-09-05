@@ -30,12 +30,12 @@ class ProductController extends Controller
                 $query->where('company_id', $companyId);
             }
 
-            if ($minPrice && $maxPrice) {
-                $query->whereBetween('price', [$minPrice, $maxPrice]);
+            if ($minPrice || $maxPrice) {
+                $query->whereBetween('price', [$minPrice ?? 0, $maxPrice ?? PHP_INT_MAX]);
             }
 
-            if ($minStock && $maxStock) {
-                $query->whereBetween('stock', [$minStock, $maxStock]);
+            if ($minStock || $maxStock) {
+                $query->whereBetween('stock', [$minStock ?? 0, $maxStock ?? PHP_INT_MAX]);
             }
 
             $products = $query->orderBy('id', 'desc')->get();
@@ -58,7 +58,6 @@ class ProductController extends Controller
     // 商品の保存
     public function store(Request $request)
     {
-        // リクエストデータをログに出力
         Log::info('Request Data (Store):', $request->all());
 
         // 入力バリデーション
@@ -74,17 +73,15 @@ class ProductController extends Controller
         try {
             $productData = $request->only(['product_name', 'price', 'stock', 'company_id', 'comment']);
 
-            // 画像がアップロードされている場合は処理
+            // 画像処理
             if ($request->hasFile('img_path')) {
-                $image = $request->file('img_path');
-                $imagePath = $image->store('images', 'public');
+                $imagePath = $request->file('img_path')->store('images', 'public');
                 $productData['img_path'] = $imagePath;
             }
 
-            // デバッグログを追加
             Log::info('Processed Product Data:', $productData);
 
-            // 商品を保存
+            // 商品の保存
             Product::create($productData);
 
             return redirect()->route('products.index')->with('success', '商品が追加されました。');
@@ -122,7 +119,6 @@ class ProductController extends Controller
     // 商品の更新
     public function update(Request $request, $id)
     {
-        // 入力バリデーション
         $request->validate([
             'product_name' => 'required|string|max:255',
             'price' => 'required|numeric',
@@ -136,20 +132,17 @@ class ProductController extends Controller
             $product = Product::findOrFail($id);
             $productData = $request->only(['product_name', 'price', 'stock', 'company_id', 'comment']);
 
-            // デバッグログを追加
             Log::info('Before saving product:', $productData);
 
-            // 画像がアップロードされている場合は処理
+            // 画像がアップロードされている場合の処理
             if ($request->hasFile('img_path')) {
-                $image = $request->file('img_path');
-                $imagePath = $image->store('images', 'public');
+                $imagePath = $request->file('img_path')->store('images', 'public');
                 $productData['img_path'] = $imagePath;
             }
 
-            // デバッグログを追加
             Log::info('Processed Product Data:', $productData);
 
-            // 商品を更新
+            // 商品の更新
             $product->update($productData);
 
             return redirect()->route('products.index')->with('success', '商品が更新されました。');
@@ -161,23 +154,22 @@ class ProductController extends Controller
 
     // 商品の削除
     public function destroy($id)
-{
-    try {
-        $product = Product::findOrFail($id);
-        $product->delete();
-        return response()->json(['success' => true]);
-    } catch (\Exception $e) {
-        Log::error('商品削除中にエラーが発生しました: ' . $e->getMessage());
-        return response()->json(['success' => false, 'error' => '削除に失敗しました。']);
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('商品削除中にエラーが発生しました: ' . $e->getMessage());
+            return response()->json(['success' => false, 'error' => '削除に失敗しました。']);
+        }
     }
-}
-
 
     // 商品検索の処理
     public function search(Request $request)
     {
         try {
-            $query = $request->input('query');
+            $searchQuery = $request->input('query');
             $minPrice = $request->input('min_price');
             $maxPrice = $request->input('max_price');
             $minStock = $request->input('min_stock');
@@ -185,16 +177,16 @@ class ProductController extends Controller
 
             $queryBuilder = Product::query();
 
-            if ($query) {
-                $queryBuilder->where('product_name', 'LIKE', "%{$query}%");
+            if ($searchQuery) {
+                $queryBuilder->where('product_name', 'LIKE', "%{$searchQuery}%");
             }
 
-            if ($minPrice && $maxPrice) {
-                $queryBuilder->whereBetween('price', [$minPrice, $maxPrice]);
+            if ($minPrice || $maxPrice) {
+                $queryBuilder->whereBetween('price', [$minPrice ?? 0, $maxPrice ?? PHP_INT_MAX]);
             }
 
-            if ($minStock && $maxStock) {
-                $queryBuilder->whereBetween('stock', [$minStock, $maxStock]);
+            if ($minStock || $maxStock) {
+                $queryBuilder->whereBetween('stock', [$minStock ?? 0, $maxStock ?? PHP_INT_MAX]);
             }
 
             $products = $queryBuilder->get();

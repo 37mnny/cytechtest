@@ -1,36 +1,32 @@
 $(document).ready(function() {
-    $('#search-form').on('submit', function(event) {
-        event.preventDefault();
-
-        var formData = $(this).serialize();
+    $('#search-button').on('click', function() {
+        var formData = $('#search-form').serialize();
 
         $.ajax({
-            url: "{{ route('products.index') }}", // BladeテンプレートのURLを直接指定
+            url: '{{ route("products.search") }}', // 修正: 正しいルートを設定
             type: 'GET',
             data: formData,
-            success: function(response) {
-                var tbody = $('tbody');
-                tbody.empty();
+            dataType: 'json',
+            success: function(data) {
+                var resultsTable = $('#product-table tbody');
+                resultsTable.empty();
 
-                $.each(response, function(index, product) {
-                    var row = '<tr>' +
+                if (data.length > 0) {
+                    data.forEach(function(product, index) {
+                        var newRow = '<tr>' +
                             '<td>' + (index + 1) + '</td>' +
-                            '<td>' + product.image + '</td>' +
+                            '<td><img src="/storage/' + product.img_path + '" width="100"></td>' +
                             '<td>' + product.product_name + '</td>' +
                             '<td>' + product.price + '</td>' +
                             '<td>' + product.stock + '</td>' +
-                            '<td>' + (product.company ? product.company.company_name : '') + '</td>' +
-                            '<td>' +
-                            '<a href="/products/' + product.id + '" class="btn btn-info btn-sm mx-1">詳細表示</a>' +
-                            '<form method="POST" action="/products/' + product.id + '" class="d-inline" onsubmit="return confirm(\'本当に削除しますか？\');">' +
-                            '<input type="hidden" name="_token" value="' + $('meta[name="csrf-token"]').attr('content') + '">' +
-                            '<input type="hidden" name="_method" value="DELETE">' +
-                            '<button type="submit" class="btn btn-danger btn-sm mx-1">削除</button>' +
-                            '</form>' +
-                            '</td>' +
+                            '<td>' + product.company_name + '</td>' +
+                            '<td><a href="/products/' + product.id + '" class="btn btn-info btn-sm mx-1">詳細表示</a></td>' +
                             '</tr>';
-                    tbody.append(row);
-                });
+                        resultsTable.append(newRow);
+                    });
+                } else {
+                    resultsTable.append('<tr><td colspan="7">検索結果がありません。</td></tr>');
+                }
             },
             error: function(error) {
                 console.error('Error:', error);
